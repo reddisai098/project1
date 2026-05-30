@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-
+#include<fstream>
 // A simple structure to hold contact data
 struct Contact {
     std::string name;
@@ -12,6 +12,9 @@ struct Contact {
 // Function prototypes (promises to the compiler)
 void addContact(std::vector<Contact>& book);
 void displayContacts(const std::vector<Contact>& book);
+void searchContact(const std::vector<Contact>& book);
+void saveToFile(const std::vector<Contact>& book);
+void loadFromFile(std::vector<Contact>& book);
 
 int main() {
     std::vector<Contact> contactBook;
@@ -22,6 +25,7 @@ int main() {
         std::cout << "1. Add Contact\n";
         std::cout << "2. Display All Contacts\n";
         std::cout << "3. Exit\n";
+        std::cout << "4.search contact \n"
         std::cout << "Enter your choice: ";
         std::cin >> choice;
 
@@ -34,6 +38,9 @@ int main() {
                 break;
             case 3:
                 std::cout << "Exiting program. Goodbye!\n";
+                break;
+            case 4:
+                searchContact(contactBook);
                 break;
             default:
                 std::cout << "Invalid choice! Please try again.\n";
@@ -55,6 +62,32 @@ void addContact(std::vector<Contact>& book) {
     std::cout << "Contact added successfully!\n";
 }
 
+void searchContact(const std::vector<Contact>& book) {
+    if (book.empty()) {
+        std::cout << "The contact book is empty.\n";
+        return;
+    }
+
+    std::string searchName;
+    std::cout << "Enter the name to search for: ";
+    std::cin.ignore();
+    std::getline(std::cin, searchName);
+
+    bool found = false;
+    for (const auto& contact : book) {
+        if (contact.name == searchName) {
+            std::cout << "\nContact Found!\n";
+            std::cout << "Name: " << contact.name << " | Phone: " << contact.phone << "\n";
+            found = true;
+            break; // Stop looping once found
+        }
+    }
+
+    if (!found) {
+        std::cout << "No contact found with the name '" << searchName << "'.\n";
+    }
+}
+
 void displayContacts(const std::vector<Contact>& book) {
     if (book.empty()) {
         std::cout << "No contacts found.\n";
@@ -64,4 +97,35 @@ void displayContacts(const std::vector<Contact>& book) {
     for (const auto& contact : book) {
         std::cout << "Name: " << contact.name << " | Phone: " << contact.phone << "\n";
     }
+}
+
+void saveToFile(const std::vector<Contact>& book) {
+    std::ofstream outFile("contacts.txt"); // Opens or creates the file
+
+    if (!outFile) {
+        std::cout << "Error saving data to file!\n";
+        return;
+    }
+
+    for (const auto& contact : book) {
+        // Save name and phone separated by a comma
+        outFile << contact.name << "," << contact.phone << "\n";
+    }
+    outFile.close();
+    std::cout << "Contacts successfully saved to contacts.txt!\n";
+}
+
+void loadFromFile(std::vector<Contact>& book) {
+    std::ifstream inFile("contacts.txt");
+    if (!inFile) {
+        // If file doesn't exist yet, that's fine (first time running the app)
+        return; 
+    }
+
+    Contact temp;
+    // Read the line up to the comma as the name, and the rest as the phone
+    while (std::getline(inFile, temp.name, ',') && std::getline(inFile, temp.phone)) {
+        book.push_back(temp);
+    }
+    inFile.close();
 }
