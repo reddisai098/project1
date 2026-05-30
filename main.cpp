@@ -20,12 +20,14 @@ int main() {
     std::vector<Contact> contactBook;
     int choice;
 
+    loadFromFile(contactBook);
+
     do {
         std::cout << "\n--- CONTACT BOOK ---\n";
         std::cout << "1. Add Contact\n";
         std::cout << "2. Display All Contacts\n";
-        std::cout << "3. Exit\n";
-        std::cout << "4.search contact \n"
+        std::cout << "3.search contact \n";
+        std::cout << "4. Exit\n";
         std::cout << "Enter your choice: ";
         std::cin >> choice;
 
@@ -37,10 +39,10 @@ int main() {
                 displayContacts(contactBook);
                 break;
             case 3:
-                std::cout << "Exiting program. Goodbye!\n";
+                searchContact(contactBook);
                 break;
             case 4:
-                searchContact(contactBook);
+                std::cout << "Exiting program. Goodbye!\n";
                 break;
             default:
                 std::cout << "Invalid choice! Please try again.\n";
