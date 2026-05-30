@@ -42,12 +42,13 @@ int main() {
                 searchContact(contactBook);
                 break;
             case 4:
+                saveToFile(contactBook);
                 std::cout << "Exiting program. Goodbye!\n";
                 break;
             default:
                 std::cout << "Invalid choice! Please try again.\n";
         }
-    } while (choice != 3);
+    } while (choice != 4);
 
     return 0;
 }
@@ -55,10 +56,12 @@ int main() {
 void addContact(std::vector<Contact>& book) {
     Contact newContact;
     std::cout << "Enter Name: ";
-    std::cin.ignore(); // Clears the input buffer
+    std::cin.ignore(); // Clears buffer before reading name
     std::getline(std::cin, newContact.name);
     std::cout << "Enter Phone Number: ";
     std::cin >> newContact.phone;
+    
+    std::cin.ignore(10000, '\n'); // <-- ADD THIS LINE to clear the buffer after reading phone!
     
     book.push_back(newContact);
     std::cout << "Contact added successfully!\n";
@@ -102,30 +105,27 @@ void displayContacts(const std::vector<Contact>& book) {
 }
 
 void saveToFile(const std::vector<Contact>& book) {
-    std::ofstream outFile("contacts.txt"); // Opens or creates the file
+    std::ofstream outFile("data.txt"); // Saves exactly where main.exe is running
 
     if (!outFile) {
-        std::cout << "Error saving data to file!\n";
+        std::cout << "Error: Cannot create data.txt in this folder!\n";
         return;
     }
 
     for (const auto& contact : book) {
-        // Save name and phone separated by a comma
         outFile << contact.name << "," << contact.phone << "\n";
     }
     outFile.close();
-    std::cout << "Contacts successfully saved to contacts.txt!\n";
+    std::cout << "Contacts successfully saved to data.txt!\n";
 }
 
 void loadFromFile(std::vector<Contact>& book) {
-    std::ifstream inFile("contacts.txt");
+    std::ifstream inFile("data.txt"); // Looks exactly where main.exe is running
     if (!inFile) {
-        // If file doesn't exist yet, that's fine (first time running the app)
         return; 
     }
 
     Contact temp;
-    // Read the line up to the comma as the name, and the rest as the phone
     while (std::getline(inFile, temp.name, ',') && std::getline(inFile, temp.phone)) {
         book.push_back(temp);
     }
